@@ -127,4 +127,12 @@ public function store(Request $request)
             ->route('dailyusage.index')
             ->with('success', 'Daily Usage Updated Successfully.');
     }
+    public function destroy($id)
+    {
+
+        $item = DB::table('daily_usages')->where('id',$id)->delete();
+        return redirect()
+            ->route('dailyusage.index')
+            ->with('success', 'Daily Usage Deleted Successfully.');
+    }
 }

@@ -8,23 +8,37 @@ class CriticalProductsController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Product::query();
+        $query = Product::join('items', 'products.item_id', '=', 'items.id')
+            ->select(
+                'products.*',
+                'items.item_name'
+            );
+
+        // SEARCH
         if ($request->has('search') && $request->search != '') {
-            $search = $request->search; 
-            $query->where(function($q) use ($search) {
-                $q->where('product_name', 'LIKE', "%{$search}%");
+
+            $search = $request->search;
+
+            $query->where(function ($q) use ($search) {
+
+                $q->where('items.item_name', 'LIKE', "%{$search}%");
+
             });
         }
 
-        $query->where('beginning_inventory', '>', 0) 
-        ->whereColumn('beginning_inventory', '<=', 'reorder_point');
+        // CRITICAL PRODUCTS
+        $query->where('products.beginning_inventory', '>', 0)
+            ->whereColumn('products.beginning_inventory', '<=', 'products.reorder_point');
 
         $totalCriticalProducts = $query->count();
 
-        $criticalProducts = $query->orderBy('beginning_inventory', 'asc')->paginate(10);
+        $criticalProducts = $query
+            ->orderBy('products.beginning_inventory', 'asc')
+            ->paginate(10);
 
-        return view('critical_products.index', compact('criticalProducts', 'totalCriticalProducts'));
+        return view(
+            'critical_products.index',
+            compact('criticalProducts', 'totalCriticalProducts')
+        );
     }
-
-    
 }

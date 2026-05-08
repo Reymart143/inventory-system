@@ -79,8 +79,8 @@ Route::middleware('admin')->group(function(){
     Route::get('/product/info/{id}', [DailyUsageController::class, 'getProductInfo']);
     Route::post('/dailyusage.store',[DailyUsageController::class,'store'])->name('dailyusage.store');
     Route::get('/dailyusage.edit/{id}/',[DailyUsageController::class, 'edit'])->name('dailyusage.edit');
-    Route::post('/dailyusage/update/',[DailyUsageController::class, 'update'])->name('dailyusage.update');
-    Route::delete('dailyusage.destroy/{id}',[DailyUsageController::class,'delete_DailyUsage'])->name('dailyusage.destroy');
+    Route::put('/dailyusage/update/',[DailyUsageController::class, 'update'])->name('dailyusage.update');
+    Route::delete('dailyusage.destroy/{id}',[DailyUsageController::class,'destroy'])->name('dailyusage.destroy');
 });
 // -------------------------- for both staff and seller -------------------//
     Route::get('/reports', [ReportsController::class, 'index'])->name('reports.index');

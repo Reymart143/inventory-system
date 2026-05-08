@@ -9,19 +9,13 @@ class OutOfStockController extends Controller
 
     public function index(Request $request)
 {
-    $query = Product::query();
-    
-    // Apply week filter if present
-    if ($request->has('weeks') && $request->weeks != '') {
-        $week = $request->weeks;
-        $query->where('weeks', $week);
-    }
-    
-    // Apply product name filter if present
-    if ($request->has('product_name') && $request->product_name != '') {
-        $product_name = $request->product_name;
-        $query->where('product_name', $product_name);
-    }
+    $query = Product::join('items', 'products.item_id', '=', 'items.id')
+        ->select(
+            'products.*',
+            'items.item_name'
+        );
+
+
 
     // Ensure we only get out of stock products
     $query->where('beginning_inventory', '<=', 0);

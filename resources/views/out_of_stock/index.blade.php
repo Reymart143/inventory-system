@@ -22,7 +22,7 @@
             </div> 
           </div>
           <div class="card-body px-2 pb-2">
-            <form id="filter-form" class="d-flex flex-wrap align-items-center" method="GET" action="{{ route('out-of-stocks') }}">
+            {{-- <form id="filter-form" class="d-flex flex-wrap align-items-center" method="GET" action="{{ route('out-of-stocks') }}">
                 @csrf
             
                 <div class="mb-2 me-2 ms-3" style="flex: 1; min-width: 250px;">
@@ -66,16 +66,17 @@
                 <button class="btn btn-primary ms-2 me-3" type="submit" style="min-width: 230px; margin-top:35px;">
                     <i class="fa fa-filter"></i> Filter
                 </button>
-            </form>
+            </form> --}}
             
             <div class="table-responsive p-3" style="overflow-x: hidden !important;">
                 <table class="table table-bordered table-striped mb-0">
                     <thead>
                         <tr>
-                            <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Products</th>
-                            <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Unit</th>
-                            <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Selling Price</th>
-                            <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Stock Quantity</th>
+                                <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Products</th>
+                        <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Unit</th>
+                        <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Holding Cost</th>
+                        <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Ordering Cost</th>
+                        <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Stock Quantity</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -88,9 +89,10 @@
                         @else
                             @foreach($outOfStockProducts as $outstock)
                             <tr>
-                              <td>{{ $outstock->product_name }}</td>
-                              <td>{{ $outstock->unit }}</td>
-                              <td>{{ number_format($outstock->selling_price, 2) }}</td>
+                              <td>{{ $outstock->item_name }}</td>
+                               <td>{{ $outstock->unit }}</td>
+                                <td>{{ number_format($outstock->holding_cost, 2) }}</td>
+                                <td>{{ number_format($outstock->ordering_cost, 2) }}</td>
                               <td><span class="badge badge-sm bg-gradient-danger">{{ $outstock->beginning_inventory }}</span></td>
                             </tr>                        
                             @endforeach

@@ -26,7 +26,8 @@
                     <tr>
                         <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Products</th>
                         <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Unit</th>
-                        <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Selling Price</th>
+                        <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Holding Cost</th>
+                        <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Ordering Cost</th>
                         <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Stock Quantity</th>
                     </tr>
                 </thead>
@@ -40,9 +41,10 @@
                     @else
                         @foreach($criticalProducts as $critical)
                         <tr>
-                          <td>{{ $critical->product_name }}</td>
+                          <td>{{ $critical->item_name }}</td>
                           <td>{{ $critical->unit }}</td>
-                          <td>{{ number_format($critical->selling_price, 2) }}</td>
+                          <td>{{ number_format($critical->holding_cost, 2) }}</td>
+                          <td>{{ number_format($critical->ordering_cost, 2) }}</td>
                           <td><span class="badge badge-sm bg-gradient-danger">{{ $critical->beginning_inventory }}</span></td>
                         </tr>                        
                         @endforeach

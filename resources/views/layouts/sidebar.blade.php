@@ -22,6 +22,14 @@
                     <h6 class="ps-4 ms-2 text-uppercase text-xs text-white font-weight-bolder opacity-8">Activities</h6>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link text-white {{ request()->is('items') ? 'active bg-gradient-success' : '' }}" href="/items">
+                        <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                            <i class="material-icons opacity-10">store</i>
+                        </div>
+                        <span class="nav-link-text ms-1">Items List</span>
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link text-white {{ request()->is('products/index') ? 'active bg-gradient-success' : '' }}" href="/products/index">
                         <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="material-icons opacity-10">store</i>
@@ -30,13 +38,21 @@
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link text-white {{ request()->is('dailyusage/index') ? 'active bg-gradient-success' : '' }}" href="/dailyusage/index">
+                        <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                            <i class="material-icons opacity-10">inventory</i>
+                        </div>
+                        <span class="nav-link-text ms-1">Daily Usage</span>
+                    </a>
+                </li>
+                {{-- <li class="nav-item">
                     <a class="nav-link text-white {{ request()->is('stock-in-products') ? 'active bg-gradient-success' : '' }}" href="/stock-in-products">
                         <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="material-icons opacity-10">inventory</i>
                         </div>
                         <span class="nav-link-text ms-1">Stock In Products</span>
                     </a>
-                </li>
+                </li> --}}
                 <li class="nav-item">
                     <a class="nav-link text-white {{ request()->is('critical-products') ? 'active bg-gradient-success' : '' }}" href="/critical-products">
                         <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
@@ -53,7 +69,7 @@
                         <span class="nav-link-text ms-1">Out of Stocks</span>
                     </a>
                 </li>
-                <li class="nav-item">
+                {{-- <li class="nav-item">
                     <a class="nav-link text-white {{ request()->is('customer-orders') ? 'active bg-gradient-success' : '' }}" href="/customer-orders">
                         <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="material-icons opacity-10">shopping_cart</i>
@@ -68,7 +84,7 @@
                         </div>
                         <span class="nav-link-text ms-1">List of Customer</span>
                     </a>
-                </li>
+                </li> --}}
                 <li class="nav-item mt-3">
                     <h6 class="ps-4 ms-2 text-uppercase text-xs text-white font-weight-bolder opacity-8">Management</h6>
                 </li>

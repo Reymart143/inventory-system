@@ -8,6 +8,7 @@ use Yajra\DataTables\Facades\DataTables;
 use App\Imports\ProductsImport;
 use Maatwebsite\Excel\Facades\Excel;
 use DB;
+use Illuminate\Support\Facades\Auth;
 class ProductController extends Controller
 {
     /**
@@ -132,8 +133,7 @@ class ProductController extends Controller
                 $query = DB::table('products')
                     ->join('items', 'products.item_id', '=', 'items.id')
 
-                    // get total stock out / daily usage
-                    ->leftJoin('stock_ins', 'products.item_id', '=', 'stock_ins.item_id')
+                    ->leftJoin('daily_usages', 'products.item_id', '=', 'daily_usages.item_id')
 
                     ->select(
                         'products.id',
@@ -143,14 +143,15 @@ class ProductController extends Controller
                         'products.holding_cost',
                         'products.ordering_cost',
                         'products.beginning_inventory',
+                        'products.beginning_inventory_fixed',
                         'products.reorder_point',
                         'products.status',
 
-                        DB::raw('COALESCE(SUM(stock_ins.daily_usage), 0) as daily_usage'),
+                        DB::raw('COALESCE(SUM(daily_usages.daily_usage), 0) as daily_usage'),
 
                         DB::raw('
-                            (products.beginning_inventory - 
-                            COALESCE(SUM(stock_ins.daily_usage), 0)
+                            (products.beginning_inventory_fixed - 
+                            COALESCE(SUM(daily_usages.daily_usage), 0)
                             ) as ending_inventory
                         ')
                     )
@@ -163,6 +164,7 @@ class ProductController extends Controller
                         'products.holding_cost',
                         'products.ordering_cost',
                         'products.beginning_inventory',
+                        'products.beginning_inventory_fixed',
                         'products.reorder_point',
                         'products.status'
                     );
@@ -171,16 +173,23 @@ class ProductController extends Controller
 
                     ->addColumn('action', function($row){
                         return '
-                            <button class="btn btn-sm btn-primary">
-                                Edit
-                            </button>
+                             <input type="hidden" id="account_' . $row->id . '" value="' . $row->unit . '" data-name="' . $row->item_name . '" />
+                                <button type="button" name="edit" onclick="editProductDetails(' . $row->id . ')" class="action-button accept btn btn-info btn-sm" style="padding: 2mm 3mm; font-size: 10px;">
+                                    <i class="fa fa-edit"></i>
+                                    <span class="action-text" style="font-size:10px">Edit</span>
+                                </button>
+                                <button type="button" name="softDelete" onclick="deleteProductDetails(' . $row->id . ')" class="action-button softDelete btn btn-danger btn-sm" style="padding: 2mm 4mm; font-size: 10px;">
+                                    <i class="fa fa-trash"></i>
+                                    <span class="action-text" style="font-size:10px">Delete</span>
+                                </button>
                         ';
                     })
 
                     ->make(true);
             }
+            $items = DB::table('items')->get();
 
-            return view('products.index');
+            return view('products.index',compact('items'));
         }
     
     /**
@@ -190,18 +199,25 @@ class ProductController extends Controller
      */
     public function add_product(Request $request)
     {
+        // dd($request->all());
         $ProductForm              = Product::insert([
-            'product_name'        => $request->product_name,
+            'item_id'        => $request->item_id,
             'unit'                => $request->unit,
-            'weeks'               => $request->weeks,
-            'selling_price'       => $request->selling_price,
+            'holding_cost'        => $request->holding_cost,
+            'ordering_cost'       => $request->ordering_cost,
             'beginning_inventory' => $request->beginning_inventory,
-            'beginning_inventory_fixed' => $request->beginning_inventory,
-            'profit'              => $request->profit,
+            'beginning_inventory_fixed' => $request->beginning_inventory_fixed,
             'reorder_point'       => $request->reorder_point,
+            'created_at'          => now(),
         ]);
        
         if ($ProductForm != null){
+            DB::table('activity_logs')->insert([
+                'user_id' => Auth::user()->id,
+                'item_id' => $request->item_id,
+                'beginning_inventory' => $request->beginning_inventory,
+                'date' => now(),
+            ]);
             return response()->json([
                 'status'=>200,
                 'message'=> 'Successfully Added House',
@@ -228,14 +244,13 @@ class ProductController extends Controller
     public function update_product(Request $request)
     {       
         $Updateform = Product::where('id', $request->id)->update([
-            'product_name'        => $request->product_name,
+            'item_id'        => $request->item_id,
             'unit'                => $request->unit,
-            'weeks'               => $request->weeks,
-            'selling_price'       => $request->selling_price,
+            'holding_cost'        => $request->holding_cost,
+            'ordering_cost'       => $request->ordering_cost,
             'beginning_inventory' => $request->beginning_inventory,
-            'beginning_inventory_fixed' => $request->beginning_inventory,
-            'profit'              => $request->profit,
             'reorder_point'       => $request->reorder_point,
+            'updated_at'          => now(),
         ]);
         
         return response()->json([

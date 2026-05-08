@@ -16,11 +16,12 @@ return new class extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->string('item_id');
-            $table->string('item_name');
+            $table->string('item_name')->nullable();
             $table->string('unit');
             $table->string('holding_cost');
             $table->double('ordering_cost');
             $table->integer('beginning_inventory')->nullable();
+            $table->integer('beginning_inventory_fixed')->nullable();
             $table->integer('daily_usage')->nullable();
             $table->string('reorder_point');
             $table->integer('status')->default(0);

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\item;
 use Illuminate\Http\Request;
+use DB;
 
 class ItemController extends Controller
 {
@@ -14,7 +15,9 @@ class ItemController extends Controller
      */
     public function index()
     {
-        //
+        $items = DB::table('items')->paginate(10);
+
+        return view('item.index',compact('items'));
     }
 
     /**
@@ -24,7 +27,8 @@ class ItemController extends Controller
      */
     public function create()
     {
-        //
+          return view('item.create');
+    
     }
 
     /**
@@ -35,7 +39,12 @@ class ItemController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $items = DB::table('items')->insert([
+            'item_name' => $request->item_name,
+            'item_cost' => $request->item_cost,
+            'safety_stock' => $request->safety_stock
+        ]);
+        return redirect()->route('items.index')->with('success', 'Item Added successfully.');
     }
 
     /**
@@ -56,8 +65,9 @@ class ItemController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function edit(item $item)
-    {
-        //
+    { 
+        $item = DB::table('items')->where('id',$item->id)->first();
+        return view('item.edit',compact('item'));
     }
 
     /**
@@ -69,7 +79,14 @@ class ItemController extends Controller
      */
     public function update(Request $request, item $item)
     {
-        //
+     $items = DB::table('items')
+        ->where('id', $item->id)
+        ->update([
+            'item_name' => $request->item_name,
+            'safety_stock' => $request->safety_stock,
+            'item_cost' => $request->item_cost
+        ]);
+        return redirect()->route('items.index')->with('success', 'Item Updated successfully.');
     }
 
     /**
@@ -80,6 +97,8 @@ class ItemController extends Controller
      */
     public function destroy(item $item)
     {
-        //
+        
+        $item = DB::table('items')->where('id',$item->id)->delete();
+        return redirect()->route('items.index')->with('success', 'Item Deleted successfully.');
     }
 }

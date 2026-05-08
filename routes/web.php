@@ -14,6 +14,8 @@ use App\Http\Controllers\OutOfStockController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\CriticalProductsController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\ItemController;
+use App\Http\Controllers\DailyUsageController;
 
 /*
 |--------------------------------------------------------------------------
@@ -70,7 +72,15 @@ Route::middleware('admin')->group(function(){
     Route::get('/out-of-stocks', [OutOfStockController::class, 'index'])->name('out-of-stocks');
     Route::get('/critical-products', [CriticalProductsController::class, 'index']);
     /////////
-
+    Route::resource('items', ItemController::class);
+    //daily usage
+    Route::get('dailyusage/index',[DailyUsageController::class,'index'])->name('dailyusage.index');
+    Route::get('/dailyusage/create',[DailyUsageController::class,'create'])->name('dailyusage.create');
+    Route::get('/product/info/{id}', [DailyUsageController::class, 'getProductInfo']);
+    Route::post('/dailyusage.store',[DailyUsageController::class,'store'])->name('dailyusage.store');
+    Route::get('/dailyusage.edit/{id}/',[DailyUsageController::class, 'edit'])->name('dailyusage.edit');
+    Route::post('/dailyusage/update/',[DailyUsageController::class, 'update'])->name('dailyusage.update');
+    Route::delete('dailyusage.destroy/{id}',[DailyUsageController::class,'delete_DailyUsage'])->name('dailyusage.destroy');
 });
 // -------------------------- for both staff and seller -------------------//
     Route::get('/reports', [ReportsController::class, 'index'])->name('reports.index');

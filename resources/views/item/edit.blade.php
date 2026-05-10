@@ -68,7 +68,7 @@
                     </div>
                     <div class="mb-3 d-flex align-items-center">
                         <label for="safety_stock" class="me-3" style="width: 120px;">
-                            Safety Stocks
+                            Safety Days
                         </label>
 
                         <input type="number"

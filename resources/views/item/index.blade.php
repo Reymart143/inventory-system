@@ -58,7 +58,7 @@
                         <tr>
                             <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Item Name</th>
                            <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Item Cost</th>
-                             <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Safety Stocks</th>
+                             <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Safety Days</th>
                             <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Action</th>
                         </tr>
                     </thead>

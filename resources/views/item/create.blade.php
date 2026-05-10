@@ -52,7 +52,7 @@
                     <input type="text" id="item_cost" name="item_cost" class="form-control" value="{{ old('item_cost') }}">
                 </div>
               <div class="input-group input-group-outline mb-3">
-                    <label class="form-label">Safety Stocks</label>
+                    <label class="form-label">Safety Days</label>
                     <input type="number" id="safety_stock" name="safety_stock" class="form-control" value="{{ old('safety_stock') }}">
                 </div>
             

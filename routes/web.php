@@ -74,6 +74,8 @@ Route::middleware('admin')->group(function(){
     /////////
     Route::resource('items', ItemController::class);
     //daily usage
+   
+}); 
     Route::get('dailyusage/index',[DailyUsageController::class,'index'])->name('dailyusage.index');
     Route::get('/dailyusage/create',[DailyUsageController::class,'create'])->name('dailyusage.create');
     Route::get('/product/info/{id}', [DailyUsageController::class, 'getProductInfo']);
@@ -81,7 +83,6 @@ Route::middleware('admin')->group(function(){
     Route::get('/dailyusage.edit/{id}/',[DailyUsageController::class, 'edit'])->name('dailyusage.edit');
     Route::put('/dailyusage/update/',[DailyUsageController::class, 'update'])->name('dailyusage.update');
     Route::delete('dailyusage.destroy/{id}',[DailyUsageController::class,'destroy'])->name('dailyusage.destroy');
-});
 // -------------------------- for both staff and seller -------------------//
     Route::get('/reports', [ReportsController::class, 'index'])->name('reports.index');
     Route::get('/stock-in-products', [StockInController::class, 'index'])->name('stock-in-products');
@@ -89,7 +90,8 @@ Route::middleware('admin')->group(function(){
 // -------------------------- for both staff and admin -------------------//
     Route::get('/get-product-details/{id}', [StockInController::class, 'getProductDetails']);
     Route::post('/stockin-product',[StockInController::class,'stockin_product']);
-    Route::get('/abc.index', [ReportsController::class, 'indexABC'])->name('abc.index');
+    // Route::get('/abc.index', [ReportsController::class, 'indexABC'])->name('abc.index');
+     Route::get('/abc.index', [ReportsController::class, 'abc_analysis'])->name('abc.index');
     Route::get('/forecasting.index', [ReportsController::class, 'indexForecasting'])->name('forecasting.index');
     Route::get('/eoq.index', [ReportsController::class, 'indexEOQ'])->name('eoq.index');
     Route::get('/rop.index', [ReportsController::class, 'indexROP'])->name('rop.index');

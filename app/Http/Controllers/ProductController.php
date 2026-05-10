@@ -150,7 +150,7 @@ class ProductController extends Controller
                         DB::raw('COALESCE(SUM(daily_usages.daily_usage), 0) as daily_usage'),
 
                         DB::raw('
-                            (products.beginning_inventory_fixed - 
+                            (products.beginning_inventory - 
                             COALESCE(SUM(daily_usages.daily_usage), 0)
                             ) as ending_inventory
                         ')
@@ -205,6 +205,8 @@ class ProductController extends Controller
             'unit'                => $request->unit,
             'holding_cost'        => $request->holding_cost,
             'ordering_cost'       => $request->ordering_cost,
+            'ordering_date'        => $request->ordering_date,
+            'arrival_date'       => $request->arrival_date,
             'beginning_inventory' => $request->beginning_inventory,
             'beginning_inventory_fixed' => $request->beginning_inventory_fixed,
             'reorder_point'       => $request->reorder_point,
@@ -249,6 +251,8 @@ class ProductController extends Controller
             'holding_cost'        => $request->holding_cost,
             'ordering_cost'       => $request->ordering_cost,
             'beginning_inventory' => $request->beginning_inventory,
+            'ordering_date'        => $request->ordering_date,
+            'arrival_date'       => $request->arrival_date,
             'reorder_point'       => $request->reorder_point,
             'updated_at'          => now(),
         ]);

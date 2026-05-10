@@ -26,6 +26,7 @@ class DailyUsageController extends Controller
     }
     public function getProductInfo($id)
     {
+        
         $product = DB::table('products')
             ->where('item_id', $id)
             ->first();

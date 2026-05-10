@@ -126,9 +126,9 @@
         <div class="ms-md-auto pe-md-3 d-flex align-items-center"></div>
         <ul class="navbar-nav  justify-content-end">
             @if(Auth::user()->role == 0)
-                <li class="nav-item d-flex align-items-center">
+                {{-- <li class="nav-item d-flex align-items-center">
                     <a class="btn btn-outline-success btn-sm mb-0 me-3 ms-2" href="/reports">Reports</a>
-                </li>
+                </li> --}}
             @endif
           <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
             <a href="javascript:;" class="nav-link text-body p-0" id="iconNavbarSidenav">

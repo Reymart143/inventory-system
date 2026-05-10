@@ -7,7 +7,7 @@
       <div class="col-12">
         <div class="card my-4">
           <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
-            <div class="bg-gradient-success shadow-success border-radius-lg pt-4 pb-3">
+            <div class="bg-gradient-info shadow-info border-radius-lg pt-4 pb-3">
               <div class="d-flex justify-content-between align-items-center ps-3 pe-3">
                   <h5 class="text-white text-capitalize flex-grow-1">Critical Products</h5>
                   <form action=" " method="GET" class="d-flex align-items-center"> 

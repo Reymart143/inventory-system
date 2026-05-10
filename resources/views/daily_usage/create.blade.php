@@ -36,7 +36,7 @@
       <div class="col-6">
         <div class="card my4">
             <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
-                <div class="bg-gradient-success shadow-success border-radius-lg pt-4 pb-3 d-flex justify-content-between align-items-center">
+                <div class="bg-gradient-info shadow-info border-radius-lg pt-4 pb-3 d-flex justify-content-between align-items-center">
                     <h5 class="text-white text-capitalize ps-3">Daily Usage Form</h5>
                 </div>
             </div>
@@ -74,15 +74,25 @@
                             $.ajax({
                                 url: '/product/info/' + id,
                                 type: 'GET',
-                                success: function (data) {
+                            success: function (data) {
+
+                                    if (!data || Object.keys(data).length === 0) {
+
+                                        Swal.fire({
+                                            title: 'No Inventory in this Item Yet',
+                                            text: 'Cannot Proceed',
+                                            icon: 'error',
+                                        });
+
+                                        return;
+                                    }
 
                                     $('#info_beginning').text(data.beginning_inventory ?? '-');
                                     $('#info_holding').text(data.holding_cost ?? '-');
                                     $('#info_ordering').text(data.ordering_cost ?? '-');
-
                                 },
                                 error: function (xhr) {
-                                    console.log(xhr.responseText);
+                                     
                                 }
                             });
 

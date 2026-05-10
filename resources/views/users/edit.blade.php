@@ -45,7 +45,7 @@
       <div class="col-6">
         <div class="card my4">
             <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
-                <div class="bg-gradient-success shadow-success border-radius-lg pt-4 pb-3 d-flex justify-content-between align-items-center">
+                <div class="bg-gradient-info shadow-info border-radius-lg pt-4 pb-3 d-flex justify-content-between align-items-center">
                     <h5 class="text-white text-capitalize ps-3">Edit User Information</h5>
                 </div>
             </div>
@@ -94,7 +94,7 @@
                     <select id="role" name="role" class="form-control" required>
                         <option value="">Select Position</option>
                         <option value="1" {{ old('role', $user->role) == 1 ? 'selected' : '' }}>Staff</option>
-                        <option value="2" {{ old('role', $user->role) == 2 ? 'selected' : '' }}>Seller</option>
+                        {{-- <option value="2" {{ old('role', $user->role) == 2 ? 'selected' : '' }}>Seller</option> --}}
                     </select>
                 </div>
             

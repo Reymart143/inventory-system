@@ -35,7 +35,7 @@
       <div class="col-6">
         <div class="card my4">
             <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
-                <div class="bg-gradient-success shadow-success border-radius-lg pt-4 pb-3 d-flex justify-content-between align-items-center">
+                <div class="bg-gradient-info shadow-info border-radius-lg pt-4 pb-3 d-flex justify-content-between align-items-center">
                     <h5 class="text-white text-capitalize ps-3">Items Form</h5>
                 </div>
             </div>
@@ -43,7 +43,6 @@
             <form role="form" action="{{ route('items.store') }}" method="POST" id="userForm">
                 @csrf
             
-                <h6 class="text-success">Personal Information</h6>
                 <div class="input-group input-group-outline mb-3">
                     <label class="form-label">Item Name</label>
                     <input type="text" id="item_name" name="item_name" class="form-control" value="{{ old('item_name') }}">

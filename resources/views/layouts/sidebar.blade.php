@@ -1,17 +1,31 @@
 <aside class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3   bg-gradient-dark" id="sidenav-main">
     <div class="sidenav-header">
       <i class="fas fa-times p-3 cursor-pointer text-white opacity-5 position-absolute end-0 top-0 d-none d-xl-none" aria-hidden="true" id="iconSidenav"></i>
-      <a class="navbar-brand m-0" href=" / ">
-        <img src="{{asset('assets/img/logos/logo.png')}}" class="navbar-brand-img h-100 rounded-circle" alt="main_logo">
-        <span class="ms-1 font-weight-bold text-white">Company A IMS</span>
-      </a>
+     <a class="navbar-brand m-0 d-flex align-items-center" href="/">
+
+        <img src="{{ asset('assets/img/logos/logo.png') }}"
+            class="navbar-brand-img rounded-circle"
+            style="width:100px; height:50px;"
+            alt="main_logo">
+
+        <div class="ms-2 d-flex flex-column lh-sm">
+            <span class="font-weight-bold text-white">
+                Combat Design &
+            </span>
+
+            <span class="font-weight-bold text-white">
+                Printing Services
+            </span>
+        </div>
+
+    </a>
     </div>
     <hr class="horizontal light mt-0 mb-2">
     <div class="collapse navbar-collapse  w-auto " id="sidenav-collapse-main">
         @if(Auth::user()->role == 0)
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="nav-link text-white {{ request()->is('dashboard') ? 'active bg-gradient-success' : '' }}" href="/dashboard">
+                    <a class="nav-link text-white {{ request()->is('dashboard') ? 'active bg-gradient-info' : '' }}" href="/dashboard">
                         <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="material-icons opacity-10">dashboard</i>
                         </div>
@@ -22,7 +36,7 @@
                     <h6 class="ps-4 ms-2 text-uppercase text-xs text-white font-weight-bolder opacity-8">Activities</h6>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-white {{ request()->is('items') ? 'active bg-gradient-success' : '' }}" href="/items">
+                    <a class="nav-link text-white {{ request()->is('items') ? 'active bg-gradient-info' : '' }}" href="/items">
                         <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="material-icons opacity-10">store</i>
                         </div>
@@ -30,15 +44,15 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-white {{ request()->is('products/index') ? 'active bg-gradient-success' : '' }}" href="/products/index">
+                    <a class="nav-link text-white {{ request()->is('products/index') ? 'active bg-gradient-info' : '' }}" href="/products/index">
                         <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="material-icons opacity-10">store</i>
                         </div>
-                        <span class="nav-link-text ms-1">My Products</span>
+                        <span class="nav-link-text ms-1">My Inventory</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-white {{ request()->is('dailyusage/index') ? 'active bg-gradient-success' : '' }}" href="/dailyusage/index">
+                    <a class="nav-link text-white {{ request()->is('dailyusage/index') ? 'active bg-gradient-info' : '' }}" href="/dailyusage/index">
                         <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="material-icons opacity-10">inventory</i>
                         </div>
@@ -54,7 +68,7 @@
                     </a>
                 </li> --}}
                 <li class="nav-item">
-                    <a class="nav-link text-white {{ request()->is('critical-products') ? 'active bg-gradient-success' : '' }}" href="/critical-products">
+                    <a class="nav-link text-white {{ request()->is('critical-products') ? 'active bg-gradient-info' : '' }}" href="/critical-products">
                         <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="material-icons opacity-10">warning</i>
                         </div>
@@ -62,7 +76,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-white {{ request()->is('out-of-stocks') ? 'active bg-gradient-success' : '' }}" href="/out-of-stocks">
+                    <a class="nav-link text-white {{ request()->is('out-of-stocks') ? 'active bg-gradient-info' : '' }}" href="/out-of-stocks">
                         <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="material-icons opacity-10">inventory_2</i>
                         </div>
@@ -103,28 +117,28 @@
                     
                     <div class="collapse" id="reportsDropdown" style="display: none;">
                         <ul class="nav flex-column ms-3">
-                            <li class="nav-item">
+                            {{-- <li class="nav-item">
                                 <a class="nav-link text-white {{ request()->is('reports') ? 'active bg-gradient-success' : '' }}" href="/reports">
                                     Summary
                                 </a>
-                            </li>
+                            </li> --}}
                             <li class="nav-item">
-                                <a class="nav-link text-white {{ request()->is('abc.index') ? 'active bg-gradient-success' : '' }}" href="/abc.index">
+                                <a class="nav-link text-white {{ request()->is('abc.index') ? 'active bg-gradient-info' : '' }}" href="/abc.index">
                                     ABC Analysis
                                 </a>
                             </li>
-                            <li class="nav-item">
+                            {{-- <li class="nav-item">
                                 <a class="nav-link text-white {{ request()->is('forecasting.index') ? 'active bg-gradient-success' : '' }}" href="/forecasting.index">
                                     Forecasting
                                 </a>
-                            </li>
+                            </li> --}}
                             <li class="nav-item">
-                                <a class="nav-link text-white {{ request()->is('eoq.index') ? 'active bg-gradient-success' : '' }}" href="/eoq.index">
+                                <a class="nav-link text-white {{ request()->is('eoq.index') ? 'active bg-gradient-info' : '' }}" href="/eoq.index">
                                     EOQ
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-white {{ request()->is('rop.index') ? 'active bg-gradient-success' : '' }}" href="/rop.index">
+                                <a class="nav-link text-white {{ request()->is('rop.index') ? 'active bg-gradient-info' : '' }}" href="/rop.index">
                                     ROP
                                 </a>
                             </li>
@@ -174,7 +188,7 @@
                 </style>
                 
                 <li class="nav-item">
-                    <a class="nav-link text-white {{ request()->is('activity-logs') ? 'active bg-gradient-success' : '' }}" href="/activity-logs">
+                    <a class="nav-link text-white {{ request()->is('activity-logs') ? 'active bg-gradient-info' : '' }}" href="/activity-logs">
                         <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="material-icons opacity-10">history</i>
                         </div>
@@ -182,7 +196,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-white {{ request()->is('users') ? 'active bg-gradient-success' : '' }}" href="/users">
+                    <a class="nav-link text-white {{ request()->is('users') ? 'active bg-gradient-info' : '' }}" href="/users">
                         <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="material-icons opacity-10">group</i>
                         </div>
@@ -193,7 +207,7 @@
                     <h6 class="ps-4 ms-2 text-uppercase text-xs text-white font-weight-bolder opacity-8">Account Page</h6>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-white {{ request()->is('profile') ? 'active bg-gradient-success' : '' }}" href="/profile">
+                    <a class="nav-link text-white {{ request()->is('profile') ? 'active bg-gradient-info' : '' }}" href="/profile">
                         <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="material-icons opacity-10">person</i>
                         </div>
@@ -204,11 +218,11 @@
             @elseif(Auth::user()->role == 1)
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="nav-link text-white {{ request()->is('stock-in-products') ? 'active bg-gradient-success' : '' }}" href="/stock-in-products">
+                    <a class="nav-link text-white {{ request()->is('dailyusage/index') ? 'active bg-gradient-info' : '' }}" href="/dailyusage/index">
                         <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="material-icons opacity-10">inventory</i>
                         </div>
-                        <span class="nav-link-text ms-1">Stock In Products</span>
+                        <span class="nav-link-text ms-1">Daily Usage</span>
                     </a>
                 </li>
                 
@@ -244,35 +258,36 @@
                         <i class="material-icons arrow-icon">expand_more</i>
                     </a>
                     
-                    <div class="collapse" id="reportsDropdown" style="display: none;">
+                   <div class="collapse" id="reportsDropdown" style="display: none;">
                         <ul class="nav flex-column ms-3">
-                            <li class="nav-item">
+                            {{-- <li class="nav-item">
                                 <a class="nav-link text-white {{ request()->is('reports') ? 'active bg-gradient-success' : '' }}" href="/reports">
                                     Summary
                                 </a>
-                            </li>
+                            </li> --}}
                             <li class="nav-item">
-                                <a class="nav-link text-white {{ request()->is('abc.index') ? 'active bg-gradient-success' : '' }}" href="/abc.index">
+                                <a class="nav-link text-white {{ request()->is('abc.index') ? 'active bg-gradient-info' : '' }}" href="/abc.index">
                                     ABC Analysis
                                 </a>
                             </li>
-                            <li class="nav-item">
+                            {{-- <li class="nav-item">
                                 <a class="nav-link text-white {{ request()->is('forecasting.index') ? 'active bg-gradient-success' : '' }}" href="/forecasting.index">
                                     Forecasting
                                 </a>
-                            </li>
+                            </li> --}}
                             <li class="nav-item">
-                                <a class="nav-link text-white {{ request()->is('eoq.index') ? 'active bg-gradient-success' : '' }}" href="/eoq.index">
+                                <a class="nav-link text-white {{ request()->is('eoq.index') ? 'active bg-gradient-info' : '' }}" href="/eoq.index">
                                     EOQ
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-white {{ request()->is('rop.index') ? 'active bg-gradient-success' : '' }}" href="/rop.index">
+                                <a class="nav-link text-white {{ request()->is('rop.index') ? 'active bg-gradient-info' : '' }}" href="/rop.index">
                                     ROP
                                 </a>
                             </li>
                         </ul>
                     </div>
+
 
                     <script>
                         document.addEventListener('DOMContentLoaded', function() {

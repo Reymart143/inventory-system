@@ -41,7 +41,7 @@ class LoginController extends Controller
                 return redirect()->intended(route('dashboard')); 
             } elseif ($user->role == 1) {
                 $this->authenticated($request, Auth::user());
-                return redirect()->intended(route('stock-in-products')); 
+             return redirect()->intended(route('dashboard')); 
             } elseif ($user->role == 2) {
                 $this->authenticated($request, Auth::user());
                 return redirect()->intended(route('customer-orders')); 

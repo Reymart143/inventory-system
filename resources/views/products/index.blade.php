@@ -7,7 +7,7 @@
       <div class="col-12">
         <div class="card my-4">
           <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
-            <div class="bg-gradient-success shadow-success border-radius-lg pt-4 pb-3 d-flex align-items-center">
+            <div class="bg-gradient-info shadow-info border-radius-lg pt-4 pb-3 d-flex align-items-center">
               <h5 class="text-white text-capitalize ps-3 flex-grow-1">My Products</h5>
               <a href="javascript:void(0)" class="btn btn-primary me-4" data-bs-toggle="modal" data-bs-target="#addProductModal">
                 <i class="fa fa-plus me-2"></i>Add Products
@@ -68,7 +68,7 @@
 <div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header bg-success">
+            <div class="modal-header bg-info">
                 <h5 class="modal-title text-white" id="addProductModalLabel">Add Product</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -164,9 +164,20 @@
                             <label for="supplier_cost" class="form-label">Re-order Point</label>
                             <input type="number" class="form-control ps-2 modal-inputs" placeholder="Set Re-order Point" id="reorder_point" name="reorder_point" required>
                         </div>
-                
+            
                     </div>
-                   
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="holding_cost" class="form-label">Ordering Date</label>
+                                <input type="date" class="form-control ps-2 modal-inputs" placeholder="Enter Ordering Date" id="ordering_date" name="ordering_date" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="supplier_cost" class="form-label">Arrival Date</label>
+                                <input type="date" class="form-control ps-2 modal-inputs" placeholder="Arrival Date" id="arrival_date" name="arrival_date">
+                            </div>
+                            
+                    
+                        </div>
                     <div class="row">
                         {{--                        
                         <div class="col-md-6 mb-3">
@@ -179,7 +190,7 @@
             
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary modal-close-btn" data-bs-dismiss="modal">Close</button>
-                <button type="button" id="addproduct_btn" class="btn btn-success">Save Product</button>
+                <button type="button" id="addproduct_btn" class="btn btn-info">Save Product</button>
             </div>
         </div>
     </div>
@@ -196,6 +207,8 @@
             'unit': $('#unit').val(),
             'holding_cost': $('#holding_cost').val(),
             'ordering_cost': $('#ordering_cost').val(),
+            'arrival_date': $('#arrival_date').val(),
+            'ordering_date': $('#ordering_date').val(),
             'beginning_inventory': $('#beginning_inventory').val(),
              'beginning_inventory_fixed': $('#beginning_inventory_fixed').val(),
             'reorder_point': $('#reorder_point').val()
@@ -269,6 +282,8 @@ function editProductDetails(id) {
             $('#edit_unit').val(result.unit);
             $('#edit_holding_cost').val(result.holding_cost);
             $('#edit_ordering_cost').val(result.ordering_cost);
+            $('#edit_ordering_date').val(result.ordering_date);
+            $('#edit_arrival_date').val(result.arrival_date);
             $('#edit_beginning_inventory').val(result.beginning_inventory);
             $('#edit_reorder_point').val(result.reorder_point);
 
@@ -309,6 +324,8 @@ $(document).ready(function () {
             'unit': $('#edit_unit').val(),
             'holding_cost': $('#edit_holding_cost').val(),
             'ordering_cost': $('#edit_ordering_cost').val(),
+            'arrival_date': $('#edit_arrival_date').val(),
+            'ordering_date': $('#edit_ordering_date').val(),
             'beginning_inventory': $('#edit_beginning_inventory').val(),
             'reorder_point': $('#edit_reorder_point').val(),
         };
@@ -490,7 +507,7 @@ $(document).ready(function () {
 <div class="modal fade" id="editproductmodal" tabindex="-1" aria-labelledby="editproductmodalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header bg-success">
+            <div class="modal-header bg-info">
                 <h5 class="modal-title text-white" id="editproductmodalLabel">Edit Product</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -578,11 +595,23 @@ $(document).ready(function () {
         </div>
 
     </div>
+       <div class="row">
+        <div class="col-md-6 mb-3">
+            <label for="holding_cost" class="form-label">Ordering Date</label>
+            <input type="date" class="form-control ps-2 modal-inputs" placeholder="Enter Ordering Date" id="edit_ordering_date" name="edit_ordering_date" required>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="supplier_cost" class="form-label">Arrival Date</label>
+            <input type="date" class="form-control ps-2 modal-inputs" placeholder="Arrival Date" id="edit_arrival_date" name="edit_arrival_date">
+        </div>
+        
+
+    </div>
 </form>    
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary modal-close-btn" data-bs-dismiss="modal">Close</button>
-                <button type="button" id="update_product_btn" class="btn btn-success">Update Product</button>
+                <button type="button" id="update_product_btn" class="btn btn-info">Update Product</button>
             </div>
         </div>
     </div>

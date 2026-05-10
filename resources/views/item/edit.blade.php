@@ -35,7 +35,7 @@
       <div class="col-6">
         <div class="card my4">
             <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
-                <div class="bg-gradient-success shadow-success border-radius-lg pt-4 pb-3 d-flex justify-content-between align-items-center">
+                <div class="bg-gradient-info shadow-info border-radius-lg pt-4 pb-3 d-flex justify-content-between align-items-center">
                     <h5 class="text-white text-capitalize ps-3">Items Form</h5>
                 </div>
             </div>
@@ -44,7 +44,6 @@
           
                 @csrf
               @method('PUT')
-                <h6 class="text-success">Personal Information</h6>
                     <div class="mb-3 d-flex align-items-center">
                         <label for="item_name" class="me-3" style="width: 120px;">
                             Item Name

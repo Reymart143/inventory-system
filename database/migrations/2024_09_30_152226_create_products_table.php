@@ -24,6 +24,8 @@ return new class extends Migration
             $table->integer('beginning_inventory_fixed')->nullable();
             $table->integer('daily_usage')->nullable();
             $table->string('reorder_point');
+            $table->date('ordering_date')->nullable();
+            $table->date('arrival_date')->nullable();
             $table->integer('status')->default(0);
             $table->timestamps();
         });

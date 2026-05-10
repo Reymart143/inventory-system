@@ -6,6 +6,7 @@ use App\Models\Product;
 use App\Models\CustomerOrder;
 use Illuminate\Http\Request;
 use DB;
+ use Carbon\Carbon;
 
 class ReportsController extends Controller
 {
@@ -182,131 +183,200 @@ class ReportsController extends Controller
     //     $productData = array_values($productData);
     //     return view('abc.index', compact('productData','grandTotalProfit'));
     // }
-    public function indexABC(Request $request)
-    {
-        $products = Product::with(['customerOrders' => function ($query) {
-            $query->select('product_id', DB::raw('SUM(stock_out_quantity) as total_stock_out_quantity'))
-                ->groupBy('product_id');
-        }])->get();
+    // CONTROLLER
 
-        $productData = [];
-        $grandTotalProfit = 0; 
+        public function abc_analysis()
+        {
+ $products = DB::table('products')
+    ->join('items', 'products.item_id', '=', 'items.id')
+    ->leftJoin('daily_usages', 'products.item_id', '=', 'daily_usages.item_id')
+    ->select(
+        'products.item_id',
+        'items.item_name',
+        'items.item_cost',
+        DB::raw('COALESCE(SUM(daily_usages.daily_usage), products.daily_usage, 0) as total_daily_usage')
+    )
+    ->groupBy(
+        'products.item_id',
+        'items.item_name',
+        'items.item_cost',
+        'products.daily_usage'
+    )
+    ->get();
 
-        foreach ($products as $product) {
-            $totalStockOutQuantity = $product->customerOrders->sum('total_stock_out_quantity') ?: 0;
+$productData = [];
 
-            $beginningInventory = (int) $product->beginning_inventory_fixed;
-            $endingInventory = $beginningInventory - $totalStockOutQuantity;
+foreach ($products as $product) {
+    $dailyUsage = (float) $product->total_daily_usage;
+    $itemCost = (float) $product->item_cost;
 
-            $lossProfit = (float) $endingInventory * (float) $product->profit; 
-            $potentialProfit = (float) $totalStockOutQuantity * (float) $product->profit; 
+    $itemValue = $dailyUsage * $itemCost;
 
-            $actualProfit = 0; 
-            if ($lossProfit < 0) {
-                if ($lossProfit < 0 || $potentialProfit < 0) {    
-                    $actualProfit = $lossProfit + $potentialProfit;
-                    $actualProfit = abs($actualProfit); 
-                } else {
-                    $actualProfit = $lossProfit - $potentialProfit;
-                }
-            } else {
-                $actualProfit = $potentialProfit;
-            }
+    $productData[] = [
+        'item_id' => $product->item_id,
+        'item_name' => $product->item_name,
+        'daily_usage' => $dailyUsage,
+        'item_cost' => $itemCost,
+        'item_value' => $itemValue,
+    ];
+}
 
-            if (!isset($productData[$product->product_name])) {
-                $productData[$product->product_name] = [
-                    'product_name' => $product->product_name,
-                    'total_actual_profit' => $actualProfit,
-                    'rowspan' => 1, 
-                ];
-            } else {
-                $productData[$product->product_name]['total_actual_profit'] += $actualProfit; 
-                $productData[$product->product_name]['rowspan']++; 
-            }
-            $grandTotalProfit += $actualProfit;
-        }
-        usort($productData, function($a, $b) {
-            return $b['total_actual_profit'] <=> $a['total_actual_profit'];
-        });
-        foreach ($productData as &$data) {
-            $data['percentage_value_of_total_profit'] = $grandTotalProfit > 0
-                ? ($data['total_actual_profit'] / $grandTotalProfit) * 100
-                : 0; 
-        }
-        $cumulativePercentage = 0; 
-        foreach ($productData as &$data) {
-            $cumulativePercentage += $data['percentage_value_of_total_profit'];
-            $data['cumulative_percentage'] = $cumulativePercentage;
-        }
+$totalItemValue = collect($productData)->sum('item_value');
 
-        $classificationLimits = [
-            'A' => 73.24,
-            'B' => 20.86,
-            'C' => 5.90,
-        ];
+usort($productData, function ($a, $b) {
+    return $b['item_value'] <=> $a['item_value'];
+});
 
-        $currentCategory = 'A';
-        $currentSum = 0;
+$cumulative = 0;
 
-        foreach ($productData as &$data) {
-          
-            if ($currentCategory === 'A') {
-                $currentSum += $data['percentage_value_of_total_profit'];
-                $data['classification'] = 'A';
-                if ($currentSum >= $classificationLimits['A']) {
-                    $currentCategory = 'B';
-                    $currentSum = 0; 
-                }
-            } elseif ($currentCategory === 'B') {
-                $currentSum += $data['percentage_value_of_total_profit'];
-                $data['classification'] = 'B';
-                if ($currentSum >= $classificationLimits['B']) {
-                    $currentCategory = 'C'; 
-                    $currentSum = 0; 
-                }
-            } elseif ($currentCategory === 'C') {
-                $currentSum += $data['percentage_value_of_total_profit'];
-                $data['classification'] = 'C'; 
-            }
-            if ($data['classification'] === 'A') {
-                $data['indicated_percentage'] = '73.24%'; 
-            } elseif ($data['classification'] === 'B') {
-                $data['indicated_percentage'] = '20.86%'; 
-            } elseif ($data['classification'] === 'C') {
-                $data['indicated_percentage'] = '5.90%'; 
-            }
-        }
+foreach ($productData as &$item) {
+    $individualPercentage = $totalItemValue > 0
+        ? ($item['item_value'] / $totalItemValue) * 100
+        : 0;
 
-        $totalProducts = count($productData);
-        $classificationCounts = [
-            'A' => 0,
-            'B' => 0,
-            'C' => 0,
-        ];
-        foreach ($productData as $data) {
-            if ($data['classification'] === 'A') {
-                $classificationCounts['A']++;
-            } elseif ($data['classification'] === 'B') {
-                $classificationCounts['B']++;
-            } elseif ($data['classification'] === 'C') {
-                $classificationCounts['C']++;
-            }
-        }
+    $cumulative += $individualPercentage;
 
-        foreach ($productData as &$data) {
-            $data['percentage_of_items'] = $totalProducts > 0
-                ? ($classificationCounts[$data['classification']] / $totalProducts) * 100
-                : 0;
-        }
-
-        foreach ($productData as &$data) {
-            $data['rowspan'] = $data['rowspan'] > 1 ? $data['rowspan'] : 1; 
-        }
-
-        $productData = array_values($productData);
-    
-        return view('abc.index', compact('productData', 'grandTotalProfit'));
+    if ($cumulative <= 80) {
+        $classification = 'A';
+    } elseif ($cumulative <= 95) {
+        $classification = 'B';
+    } else {
+        $classification = 'C';
     }
+
+    $item['individual_percentage'] = round($individualPercentage, 2);
+    $item['cumulative_percentage'] = round($cumulative, 2);
+    $item['classification'] = $classification;
+}
+
+unset($item);
+            return view('abc.index', compact('productData'));
+        }
+    // public function indexABC(Request $request)
+    // {
+    //     $products = Product::with(['customerOrders' => function ($query) {
+    //         $query->select('product_id', DB::raw('SUM(stock_out_quantity) as total_stock_out_quantity'))
+    //             ->groupBy('product_id');
+    //     }])->get();
+
+    //     $productData = [];
+    //     $grandTotalProfit = 0; 
+
+    //     foreach ($products as $product) {
+    //         $totalStockOutQuantity = $product->customerOrders->sum('total_stock_out_quantity') ?: 0;
+
+    //         $beginningInventory = (int) $product->beginning_inventory_fixed;
+    //         $endingInventory = $beginningInventory - $totalStockOutQuantity;
+
+    //         $lossProfit = (float) $endingInventory * (float) $product->profit; 
+    //         $potentialProfit = (float) $totalStockOutQuantity * (float) $product->profit; 
+
+    //         $actualProfit = 0; 
+    //         if ($lossProfit < 0) {
+    //             if ($lossProfit < 0 || $potentialProfit < 0) {    
+    //                 $actualProfit = $lossProfit + $potentialProfit;
+    //                 $actualProfit = abs($actualProfit); 
+    //             } else {
+    //                 $actualProfit = $lossProfit - $potentialProfit;
+    //             }
+    //         } else {
+    //             $actualProfit = $potentialProfit;
+    //         }
+
+    //         if (!isset($productData[$product->product_name])) {
+    //             $productData[$product->product_name] = [
+    //                 'product_name' => $product->product_name,
+    //                 'total_actual_profit' => $actualProfit,
+    //                 'rowspan' => 1, 
+    //             ];
+    //         } else {
+    //             $productData[$product->product_name]['total_actual_profit'] += $actualProfit; 
+    //             $productData[$product->product_name]['rowspan']++; 
+    //         }
+    //         $grandTotalProfit += $actualProfit;
+    //     }
+    //     usort($productData, function($a, $b) {
+    //         return $b['total_actual_profit'] <=> $a['total_actual_profit'];
+    //     });
+    //     foreach ($productData as &$data) {
+    //         $data['percentage_value_of_total_profit'] = $grandTotalProfit > 0
+    //             ? ($data['total_actual_profit'] / $grandTotalProfit) * 100
+    //             : 0; 
+    //     }
+    //     $cumulativePercentage = 0; 
+    //     foreach ($productData as &$data) {
+    //         $cumulativePercentage += $data['percentage_value_of_total_profit'];
+    //         $data['cumulative_percentage'] = $cumulativePercentage;
+    //     }
+
+    //     $classificationLimits = [
+    //         'A' => 73.24,
+    //         'B' => 20.86,
+    //         'C' => 5.90,
+    //     ];
+
+    //     $currentCategory = 'A';
+    //     $currentSum = 0;
+
+    //     foreach ($productData as &$data) {
+          
+    //         if ($currentCategory === 'A') {
+    //             $currentSum += $data['percentage_value_of_total_profit'];
+    //             $data['classification'] = 'A';
+    //             if ($currentSum >= $classificationLimits['A']) {
+    //                 $currentCategory = 'B';
+    //                 $currentSum = 0; 
+    //             }
+    //         } elseif ($currentCategory === 'B') {
+    //             $currentSum += $data['percentage_value_of_total_profit'];
+    //             $data['classification'] = 'B';
+    //             if ($currentSum >= $classificationLimits['B']) {
+    //                 $currentCategory = 'C'; 
+    //                 $currentSum = 0; 
+    //             }
+    //         } elseif ($currentCategory === 'C') {
+    //             $currentSum += $data['percentage_value_of_total_profit'];
+    //             $data['classification'] = 'C'; 
+    //         }
+    //         if ($data['classification'] === 'A') {
+    //             $data['indicated_percentage'] = '73.24%'; 
+    //         } elseif ($data['classification'] === 'B') {
+    //             $data['indicated_percentage'] = '20.86%'; 
+    //         } elseif ($data['classification'] === 'C') {
+    //             $data['indicated_percentage'] = '5.90%'; 
+    //         }
+    //     }
+
+    //     $totalProducts = count($productData);
+    //     $classificationCounts = [
+    //         'A' => 0,
+    //         'B' => 0,
+    //         'C' => 0,
+    //     ];
+    //     foreach ($productData as $data) {
+    //         if ($data['classification'] === 'A') {
+    //             $classificationCounts['A']++;
+    //         } elseif ($data['classification'] === 'B') {
+    //             $classificationCounts['B']++;
+    //         } elseif ($data['classification'] === 'C') {
+    //             $classificationCounts['C']++;
+    //         }
+    //     }
+
+    //     foreach ($productData as &$data) {
+    //         $data['percentage_of_items'] = $totalProducts > 0
+    //             ? ($classificationCounts[$data['classification']] / $totalProducts) * 100
+    //             : 0;
+    //     }
+
+    //     foreach ($productData as &$data) {
+    //         $data['rowspan'] = $data['rowspan'] > 1 ? $data['rowspan'] : 1; 
+    //     }
+
+    //     $productData = array_values($productData);
+    
+    //     return view('abc.index', compact('productData', 'grandTotalProfit'));
+    // }
     
     public function indexForecasting()
     {
@@ -371,128 +441,115 @@ class ReportsController extends Controller
     
 
         return view('forecasting.index', compact('productDataArray', 'grandTotalProfit'));
-    }
+        }
     public function indexEOQ(){
-        $products = Product::with(['customerOrders' => function ($query) {
-            $query->select('product_id', 'weeks', DB::raw('SUM(stock_out_quantity) as total_stock_out_quantity'))
-                ->groupBy('product_id', 'weeks');
-        }])->get();
+        $products = DB::table('products')
+        ->join('items', 'products.item_id', '=', 'items.id')
+        ->leftJoin('daily_usages', 'products.item_id', '=', 'daily_usages.item_id')
+        ->select(
+            'products.item_id',
+            'items.item_name',
+            'items.item_cost',
+            'products.ordering_cost',
+            DB::raw('COALESCE(SUM(daily_usages.daily_usage), products.daily_usage, 0) as total_daily_usage')
+        )
+        ->groupBy(
+            'products.item_id',
+            'items.item_name',
+            'items.item_cost',
+            'products.ordering_cost',
+            'products.daily_usage'
+        )
+        ->get();
 
-        $productData = [];
-        $grandTotalProfit = 0; 
+    $eoqData = [];
 
-        foreach ($products as $product) {
-            $weeklyStockOutQuantities = [];
+    foreach ($products as $product) {
 
-            foreach ($product->customerOrders as $order) {
-                $weekNumber = $order->weeks; 
+        // D = Annual Usage
+        $dailyUsage = (float) $product->total_daily_usage;
+        $annualUsage = $dailyUsage * 288;
 
-                if (!isset($weeklyStockOutQuantities[$weekNumber])) {
-                    $weeklyStockOutQuantities[$weekNumber] = 0;
-                }
-                $weeklyStockOutQuantities[$weekNumber] += $order->total_stock_out_quantity;
-            }
+        // S = Ordering Cost
+        $orderingCost = (float) $product->ordering_cost;
 
-            ksort($weeklyStockOutQuantities);
+        // H = Holding Cost (25% of item cost)
+        $holdingCost = (float) $product->item_cost * 0.25;
 
-            $totalStockOutQuantity = array_sum($weeklyStockOutQuantities);
+        // EOQ Formula
+        $EOQ = 0;
 
-            $beginningInventory = (int)$product->beginning_inventory_fixed;
-            $endingInventory = $beginningInventory - $totalStockOutQuantity;
-
-            $lossProfit = (float)$endingInventory * (float)$product->profit; 
-            $potentialProfit = (float)$totalStockOutQuantity * (float)$product->profit; 
-
-            $actualProfit = $potentialProfit; 
-            if ($lossProfit < 0) {
-                $actualProfit = $lossProfit < 0 ? abs($lossProfit + $potentialProfit) : $lossProfit - $potentialProfit;
-            }
-
-            if (!isset($productData[$product->product_name])) {
-                $productData[$product->product_name] = [
-                    'product_name' => $product->product_name,
-                    'total_actual_profit' => $actualProfit,
-                    'total_actual_demand' => $totalStockOutQuantity, 
-                    'total_forecast' => $weeklyStockOutQuantities, 
-                ];
-            } else {
-                $productData[$product->product_name]['total_actual_profit'] += $actualProfit; 
-                $productData[$product->product_name]['total_actual_demand'] += $totalStockOutQuantity; 
-                $productData[$product->product_name]['total_forecast'] += $weeklyStockOutQuantities;
-            }
-
-            $grandTotalProfit += $actualProfit;
-        
+        if ($holdingCost > 0) {
+            $EOQ = sqrt((2 * $annualUsage * $orderingCost) / $holdingCost);
         }
 
-        $productDataArray = array_values($productData);
+        $eoqData[] = [
+            'item_name' => $product->item_name,
+            'annual_usage' => round($annualUsage, 2),
+            'ordering_cost' => round($orderingCost, 2),
+            'holding_cost' => round($holdingCost, 2),
+            'eoq' => round($EOQ),
+        ];
+    }
 
-        usort($productDataArray, function($a, $b) {
-            return $b['total_actual_profit'] <=> $a['total_actual_profit'];
-        });
-
-        return view('eoq.index', compact('productDataArray', 'grandTotalProfit'));
+        return view('eoq.index', compact('eoqData'));
     }
  
     public function indexROP(){
-        $products = Product::with(['customerOrders' => function ($query) {
-            $query->select('product_id', 'weeks', DB::raw('SUM(stock_out_quantity) as total_stock_out_quantity'))
-                ->groupBy('product_id', 'weeks');
-        }])->get();
+      
 
-        $productData = [];
-        $grandTotalProfit = 0; 
+        $products = DB::table('products')
+            ->join('items', 'products.item_id', '=', 'items.id')
+            ->leftJoin('daily_usages', 'products.item_id', '=', 'daily_usages.item_id')
+            ->select(
+                'products.item_id',
+                'items.item_name',
+                'items.safety_stock',
+                'products.ordering_date',
+                'products.arrival_date',
+                DB::raw('COALESCE(SUM(daily_usages.daily_usage), products.daily_usage, 0) as total_daily_usage')
+            )
+            ->groupBy(
+                'products.item_id',
+                'items.item_name',
+                'items.safety_stock',
+                'products.ordering_date',
+                'products.arrival_date',
+                'products.daily_usage'
+            )
+            ->get();
+
+        $ropData = [];
 
         foreach ($products as $product) {
-            $weeklyStockOutQuantities = [];
 
-            foreach ($product->customerOrders as $order) {
-                $weekNumber = $order->weeks; 
+            // DAILY USAGE
+            $dailyUsage = (float) $product->total_daily_usage;
 
-                if (!isset($weeklyStockOutQuantities[$weekNumber])) {
-                    $weeklyStockOutQuantities[$weekNumber] = 0;
-                }
-                $weeklyStockOutQuantities[$weekNumber] += $order->total_stock_out_quantity;
-            }
+            // SAFETY DAYS
+            $safetyDays = (float) $product->safety_stock;
 
-            ksort($weeklyStockOutQuantities);
+            // SAFETY STOCK
+            $safetyStock = $dailyUsage * $safetyDays;
 
-            $totalStockOutQuantity = array_sum($weeklyStockOutQuantities);
+            // LEAD TIME
+            $orderingDate = Carbon::parse($product->ordering_date);
+            $arrivalDate = Carbon::parse($product->arrival_date);
 
-            $beginningInventory = (int)$product->beginning_inventory_fixed;
-            $endingInventory = $beginningInventory - $totalStockOutQuantity;
+            $leadTime = $orderingDate->diffInDays($arrivalDate);
 
-            $lossProfit = (float)$endingInventory * (float)$product->profit; 
-            $potentialProfit = (float)$totalStockOutQuantity * (float)$product->profit; 
+            // ROP FORMULA
+            $rop = ($dailyUsage * $leadTime) + $safetyStock;
 
-            $actualProfit = $potentialProfit; 
-            if ($lossProfit < 0) {
-                $actualProfit = $lossProfit < 0 ? abs($lossProfit + $potentialProfit) : $lossProfit - $potentialProfit;
-            }
-
-            if (!isset($productData[$product->product_name])) {
-                $productData[$product->product_name] = [
-                    'product_name' => $product->product_name,
-                    'total_actual_profit' => $actualProfit,
-                    'total_actual_demand' => $totalStockOutQuantity, 
-                    'total_forecast' => $weeklyStockOutQuantities, 
-                ];
-            } else {
-                $productData[$product->product_name]['total_actual_profit'] += $actualProfit; 
-                $productData[$product->product_name]['total_actual_demand'] += $totalStockOutQuantity; 
-                $productData[$product->product_name]['total_forecast'] += $weeklyStockOutQuantities;
-            }
-
-            $grandTotalProfit += $actualProfit;
-        
+            $ropData[] = [
+                'item_name' => $product->item_name,
+                'daily_usage' => $dailyUsage,
+                'lead_time' => $leadTime,
+                'safety_stock' => round($safetyStock),
+                'rop' => round($rop),
+            ];
         }
-
-        $productDataArray = array_values($productData);
-
-        usort($productDataArray, function($a, $b) {
-            return $b['total_actual_profit'] <=> $a['total_actual_profit'];
-        });
-        return view('rop.index', compact('productDataArray', 'grandTotalProfit'));
+        return view('rop.index', compact('ropData'));
     }
 
     

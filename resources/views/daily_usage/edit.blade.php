@@ -36,7 +36,7 @@
       <div class="col-6">
         <div class="card my4">
             <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
-                <div class="bg-gradient-success shadow-success border-radius-lg pt-4 pb-3 d-flex justify-content-between align-items-center">
+                <div class="bg-gradient-info shadow-info border-radius-lg pt-4 pb-3 d-flex justify-content-between align-items-center">
                     <h5 class="text-white text-capitalize ps-3">Daily Usage Form</h5>
                 </div>
             </div>
